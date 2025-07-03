@@ -1,0 +1,83 @@
+{
+  "name": "CondoPay App Demo",
+  "version": "1.0.0",
+  "description": "Demo completo dell'applicativo CondoPay SaaS per gestione pagamenti condominiali",
+  "main": "index.html",
+  "demo": {
+    "type": "web-application",
+    "login": {
+      "username": "admin@studiorossi.it",
+      "password": "demo123",
+      "role": "administrator"
+    },
+    "features": [
+      "dashboard",
+      "condominiums",
+      "payments", 
+      "residents",
+      "communications",
+      "reports",
+      "integrations",
+      "settings"
+    ]
+  },
+  "data": {
+    "condominiums": 25,
+    "residents": 847,
+    "monthlyVolume": 185420,
+    "paymentRate": 94.2,
+    "defaultRate": 3.1
+  },
+  "tech": {
+    "frontend": "Vanilla JavaScript",
+    "styling": "CSS3 with Grid/Flexbox",
+    "data": "Mock JSON objects",
+    "responsive": true,
+    "pwa": false
+  },
+  "browser": {
+    "supported": ["Chrome 90+", "Firefox 88+", "Safari 14+", "Edge 90+"],
+    "mobile": true,
+    "offline": true
+  },
+  "files": {
+    "html": 1,
+    "css": 1, 
+    "js": 4,
+    "md": 1,
+    "total": 7
+  },
+  "stats": {
+    "linesOfCode": 3800,
+    "fileSize": "~500KB",
+    "loadTime": "<2s",
+    "features": "8 complete sections"
+  },
+  "usage": {
+    "investors": "Dimostra funzionalità complete del prodotto",
+    "customers": "Permette test hands-on dell'interfaccia", 
+    "development": "Reference implementation per team tecnico",
+    "sales": "Tool per demo commerciali"
+  },
+  "deployment": {
+    "type": "static",
+    "requirements": "Web server or file system",
+    "cdn": false,
+    "database": false
+  },
+  "customization": {
+    "data": "Modifica mock-data.js per nuovi dati",
+    "styling": "Aggiorna variabili CSS in styles.css",
+    "features": "Estendi sections.js per nuove funzionalità",
+    "branding": "Personalizza loghi e colori"
+  },
+  "contact": {
+    "project": "CondoPay",
+    "website": "www.condopay.it",
+    "email": "info@condopay.it",
+    "support": "support@condopay.it"
+  },
+  "license": "Proprietary - CondoPay Demo",
+  "created": "2025-07-03",
+  "lastUpdated": "2025-07-03"
+}

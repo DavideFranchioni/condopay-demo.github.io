@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CondoPay - Dashboard Amministratore</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-left">
+            <div class="login-content">
+                <div class="login-logo">CondoPay</div>
+                <div class="login-tagline">La piattaforma che rivoluziona i pagamenti condominiali</div>
+                
+                <div class="login-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">94.2%</div>
+                        <div>Tasso Pagamento</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">-70%</div>
+                        <div>Morosità</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">2.3</div>
+                        <div>Giorni Medi Incasso</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">€185k</div>
+                        <div>Volume Mensile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-right">
+            <div class="login-form">
+                <h2>Accesso Amministratore</h2>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" value="admin@studiorossi.it" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" value="demo123" required>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Accedi alla Dashboard</button>
+                </form>
+                
+                <div class="demo-info">
+                    <strong>🎯 Demo Mode</strong><br>
+                    Usa le credenziali precompilate per accedere alla demo completa.<br>
+                    Email: admin@studiorossi.it | Password: demo123
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">CondoPay</div>
+                <div class="sidebar-subtitle">Studio Amministrazioni Rossi</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-section="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a></li>
+                <li><a href="#" data-section="condominiums">
+                    <span class="icon">🏢</span> Condomini
+                </a></li>
+                <li><a href="#" data-section="payments">
+                    <span class="icon">💳</span> Pagamenti
+                </a></li>
+                <li><a href="#" data-section="residents">
+                    <span class="icon">👥</span> Condomini
+                </a></li>
+                <li><a href="#" data-section="communications">
+                    <span class="icon">📱</span> Comunicazioni
+                </a></li>
+                <li><a href="#" data-section="reports">
+                    <span class="icon">📈</span> Report
+                </a></li>
+                <li><a href="#" data-section="integrations">
+                    <span class="icon">🔗</span> Integrazioni
+                </a></li>
+                <li><a href="#" data-section="settings">
+                    <span class="icon">⚙️</span> Impostazioni
+                </a></li>
+                <li><a href="#" onclick="logout()">
+                    <span class="icon">🚪</span> Logout
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="header-title" id="pageTitle">Dashboard Principale</h1>
+                
+                <div class="header-actions">
+                    <button class="notification-bell" onclick="showNotifications()">
+                        🔔
+                        <span class="notification-badge">3</span>
+                    </button>
+                    
+                    <div class="user-menu" onclick="showUserMenu()">
+                        <div class="user-avatar">MR</div>
+                        <div>
+                            <div style="font-weight: 500;">Marco Rossi</div>
+                            <div style="font-size: 0.8rem; color: #718096;">Amministratore</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content" id="mainContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="utils.js"></script>
+    <script src="mock-data.js"></script>
+    <script src="advanced-features.js"></script>
+    <script src="app.js"></script>
+    <script src="sections.js"></script>
+    <script src="enhanced-functions.js"></script>
+    <script src="interactive-features.js"></script>
+</body>
+</html>
