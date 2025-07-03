@@ -1,4 +1,4 @@
-// CondoPay App Demo - Main Application Logic
+// CondoPay App Demo - Main Application Logic - VERSIONE COMPLETA
 // Gestisce tutte le funzionalità dell'applicativo demo
 
 class CondoPayApp {
@@ -28,12 +28,6 @@ class CondoPayApp {
                 this.navigateTo(e.target.dataset.section);
             }
         });
-
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', () => this.toggleMobileMenu());
-        }
     }
 
     // ===== LOGIN/LOGOUT FUNCTIONALITY =====
@@ -227,14 +221,13 @@ class CondoPayApp {
                 <!-- Chart Area -->
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3 class="chart-title">Andamento Pagamenti (Ultimi 6 Mesi)</h3>
+                        <h3 class="chart-title">Grafico Pagamenti Interattivo</h3>
                         <div>
                             <button class="btn btn-secondary" onclick="app.exportChart()">📊 Esporta</button>
                         </div>
                     </div>
                     <div class="chart-area" id="mainChart">
-                        📈 Grafico Pagamenti Interattivo<br>
-                        <small>Gen: €175k | Feb: €180k | Mar: €183k | Apr: €186k | Mag: €189k | Giu: €185k</small>
+                        <!-- Il grafico sarà renderizzato qui -->
                     </div>
                 </div>
 
@@ -282,10 +275,17 @@ class CondoPayApp {
         this.setupSearchFilter();
         this.loadRecentActivity();
         
+        // Initialize the main chart after DOM is ready
+        setTimeout(() => {
+            if (window.interactiveCharts) {
+                interactiveCharts.renderPaymentsChart('mainChart');
+            }
+        }, 500);
+        
         // Simulate real-time updates
         setInterval(() => {
             this.updateActivityFeed();
-        }, 30000); // Update every 30 seconds
+        }, 30000);
     }
 
     // ===== CONDOMINIUMS SECTION =====
@@ -307,14 +307,14 @@ class CondoPayApp {
                     <h3 class="table-title">Filtri e Ricerca</h3>
                 </div>
                 <div style="padding: 1.5rem;">
-                    <div class="form-row">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-field">
                             <label>Cerca per nome</label>
-                            <input type="text" placeholder="Nome condominio..." id="searchCondominiums">
+                            <input type="text" placeholder="Nome condominio..." id="searchCondominiums" class="form-control">
                         </div>
                         <div class="form-field">
                             <label>Filtra per status</label>
-                            <select id="filterStatus">
+                            <select id="filterStatus" class="form-control">
                                 <option value="">Tutti</option>
                                 <option value="excellent">Ottimo</option>
                                 <option value="good">Buono</option>
@@ -347,7 +347,7 @@ class CondoPayApp {
                             <th>Volume Mensile</th>
                             <th>Tasso Pagamento</th>
                             <th>Morosità</th>
-                            <th>Ultimo Pagamento</th>
+                            <th>Ultimo Aggiornamento</th>
                             <th>Status</th>
                             <th>Azioni</th>
                         </tr>
@@ -427,15 +427,19 @@ class CondoPayApp {
                 </div>
             </div>
 
-            <!-- Payment Methods Chart -->
+            <!-- Payment Methods Chart and Recent -->
             <div class="dashboard-grid">
                 <div class="chart-container">
                     <div class="chart-header">
-                        <h3 class="chart-title">Metodi di Pagamento</h3>
+                        <h3 class="chart-title">Metodi di Pagamento (Questo Mese)</h3>
+                        <select class="btn btn-secondary" style="border: 1px solid #e2e8f0;">
+                            <option>Ultimo mese</option>
+                            <option>Ultimi 3 mesi</option>
+                            <option>Ultimo anno</option>
+                        </select>
                     </div>
-                    <div class="chart-area">
-                        📊 Grafico Metodi Pagamento<br>
-                        <small>Stripe: 75% | Bonifico: 20% | Contanti: 5%</small>
+                    <div class="chart-area" id="paymentMethodsChart">
+                        <!-- Il grafico sarà renderizzato qui -->
                     </div>
                 </div>
                 
@@ -493,10 +497,293 @@ class CondoPayApp {
         // Setup filters for payments
         this.setupPaymentFilters();
         
+        // Initialize payment methods chart
+        setTimeout(() => {
+            if (window.interactiveCharts) {
+                interactiveCharts.renderPaymentMethodsChart('paymentMethodsChart');
+            }
+        }, 500);
+        
         // Auto-refresh payments every 10 seconds
         setInterval(() => {
             this.refreshPayments();
         }, 10000);
+    }
+
+    // ===== GENERATE FUNCTIONS =====
+
+    generateActivityItems() {
+        const activities = CONDOPAY_MOCK_DATA.recentActivity || [];
+        
+        return activities.map(activity => `
+            <div class="activity-item">
+                <div class="activity-icon ${activity.type}">
+                    ${this.getActivityIcon(activity.type)}
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">${activity.title}</div>
+                    <div class="activity-description">${activity.description}</div>
+                </div>
+                <div class="activity-time">${this.formatTimeAgo(activity.timestamp)}</div>
+            </div>
+        `).join('');
+    }
+
+    generateCondosTableRows() {
+        const condos = CONDOPAY_MOCK_DATA.condominiums || [];
+        
+        return condos.map(condo => `
+            <tr data-condo-id="${condo.id}" style="cursor: pointer;" 
+                onclick="app.manageCondominium(${condo.id})"
+                onmouseenter="this.style.backgroundColor='#f7fafc'"
+                onmouseleave="this.style.backgroundColor='white'">
+                <td>
+                    <div>
+                        <div class="font-semibold">${condo.name}</div>
+                        <div class="text-sm text-gray-500">${condo.address}</div>
+                    </div>
+                </td>
+                <td>${condo.units}</td>
+                <td>€${condo.monthlyAmount.toLocaleString()}</td>
+                <td>
+                    <span style="color: ${this.getStatusColor(condo.paymentRate)}">${condo.paymentRate}%</span>
+                </td>
+                <td>${condo.defaultingUnits} unità</td>
+                <td><span class="status-badge status-${this.getStatusClass(condo.paymentRate)}">${this.getStatusText(condo.paymentRate)}</span></td>
+                <td onclick="event.stopPropagation();">
+                    <button class="btn btn-secondary" onclick="app.manageCondominium(${condo.id})" title="Gestisci">
+                        ⚙️
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Generate condominium cards for overview
+    generateCondominiumCards() {
+        const condos = CONDOPAY_MOCK_DATA.condominiums;
+        
+        return condos.map(condo => `
+            <div class="condo-card stat-card ${this.getCondoStatusClass(condo.paymentRate)}" 
+                 style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                 onclick="app.manageCondominium(${condo.id})"
+                 onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'"
+                 onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+                
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="margin: 0; font-size: 1.1rem; font-weight: 600;">${condo.name}</h4>
+                        <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.9rem;">${condo.address}</p>
+                    </div>
+                    <div class="status-indicator" style="width: 12px; height: 12px; border-radius: 50%; background: ${this.getStatusColor(condo.paymentRate)};"></div>
+                </div>
+                
+                <div class="card-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.25rem;">Unità</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${condo.units}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.25rem;">Volume Mensile</div>
+                        <div style="font-size: 1.1rem; font-weight: bold; color: #48bb78;">€${Utils.Number.formatNumber(condo.monthlyAmount)}</div>
+                    </div>
+                </div>
+                
+                <div class="card-metrics" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                            <span style="font-size: 0.8rem; color: #666;">Pagamenti</span>
+                            <span style="font-size: 0.9rem; font-weight: 600; color: ${this.getStatusColor(condo.paymentRate)};">${condo.paymentRate}%</span>
+                        </div>
+                        <div class="progress-bar" style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${condo.paymentRate}%; height: 100%; background: ${this.getStatusColor(condo.paymentRate)}; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.8rem; color: #666;">Morosità</div>
+                        <div style="font-size: 1rem; font-weight: bold; color: ${condo.defaultingUnits > 0 ? '#f56565' : '#48bb78'};">
+                            ${condo.defaultingUnits} unità
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-actions" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: #666;">
+                            ${condo.nextAssembly ? `Assemblea: ${Utils.Date.formatDate(condo.nextAssembly)}` : 'Nessuna assemblea programmata'}
+                        </span>
+                        <div class="quick-actions" style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); app.viewCondoResidents(${condo.id})" title="Gestisci Residenti">
+                                👥
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); app.exportCondoReport(${condo.id})" title="Report Condominio">
+                                📊
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); app.sendCondoCommunication(${condo.id})" title="Invia Comunicazione">
+                                📧
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Generate detailed condominiums table rows
+    generateDetailedCondosTableRows() {
+        const condos = CONDOPAY_MOCK_DATA.condominiums;
+        
+        return condos.map(condo => `
+            <tr data-condo-id="${condo.id}" style="cursor: pointer;" 
+                onclick="app.manageCondominium(${condo.id})"
+                onmouseenter="this.style.backgroundColor='#f7fafc'"
+                onmouseleave="this.style.backgroundColor='white'">
+                
+                <td>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: ${this.getStatusColor(condo.paymentRate)};"></div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${condo.name}</div>
+                            <div style="font-size: 0.9rem; color: #666;">${condo.city}, ${condo.zipCode}</div>
+                        </div>
+                    </div>
+                </td>
+                
+                <td>
+                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.25rem;">${condo.address}</div>
+                    <div style="display: flex; gap: 0.5rem; font-size: 0.8rem;">
+                        ${condo.elevator ? '<span style="background: #e6fffa; color: #00695c; padding: 0.125rem 0.5rem; border-radius: 12px;">Ascensore</span>' : ''}
+                        ${condo.parking ? '<span style="background: #e3f2fd; color: #1565c0; padding: 0.125rem 0.5rem; border-radius: 12px;">Parcheggio</span>' : ''}
+                        ${condo.garden ? '<span style="background: #e8f5e8; color: #2e7d32; padding: 0.125rem 0.5rem; border-radius: 12px;">Giardino</span>' : ''}
+                    </div>
+                </td>
+                
+                <td style="text-align: center;">
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #667eea;">${condo.units}</div>
+                    <div style="font-size: 0.8rem; color: #666;">unità</div>
+                </td>
+                
+                <td style="text-align: right;">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: #48bb78;">€${Utils.Number.formatNumber(condo.monthlyAmount)}</div>
+                    <div style="font-size: 0.8rem; color: #666;">mensile</div>
+                </td>
+                
+                <td style="text-align: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 1.1rem; font-weight: bold; color: ${this.getStatusColor(condo.paymentRate)}; margin-bottom: 0.25rem;">
+                            ${condo.paymentRate}%
+                        </div>
+                        <div class="mini-progress" style="width: 60px; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
+                            <div style="width: ${condo.paymentRate}%; height: 100%; background: ${this.getStatusColor(condo.paymentRate)}; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                </td>
+                
+                <td style="text-align: center;">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: ${condo.defaultingUnits > 0 ? '#f56565' : '#48bb78'};">
+                        ${condo.defaultingUnits}
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666;">unità</div>
+                </td>
+                
+                <td style="text-align: center;">
+                    <div style="font-size: 0.9rem; color: #666;">
+                        ${Utils.Date.formatDate(condo.lastSync)}
+                    </div>
+                    <div style="font-size: 0.8rem; color: #999;">
+                        ${Utils.Date.timeAgo(condo.lastSync)}
+                    </div>
+                </td>
+                
+                <td style="text-align: center;">
+                    <span class="status-badge status-${this.getCondoStatusClass(condo.paymentRate)}">
+                        ${this.getStatusText(condo.paymentRate)}
+                    </span>
+                </td>
+                
+                <td>
+                    <div class="action-buttons" style="display: flex; gap: 0.5rem;" onclick="event.stopPropagation();">
+                        <button class="btn btn-sm btn-primary" onclick="app.manageCondominium(${condo.id})" title="Gestisci">
+                            ⚙️
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.viewCondoResidents(${condo.id})" title="Residenti">
+                            👥
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.exportCondoReport(${condo.id})" title="Report">
+                            📊
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.sendCondoCommunication(${condo.id})" title="Comunica">
+                            📧
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Generate transaction items for recent activity
+    generateTransactionItems() {
+        const payments = CONDOPAY_MOCK_DATA.payments.slice(0, 5);
+        
+        return payments.map(payment => {
+            const condo = CONDOPAY_MOCK_DATA.condominiums.find(c => c.id === payment.condominiumId);
+            const resident = CONDOPAY_MOCK_DATA.residents.find(r => r.id === payment.residentId);
+            const statusIcon = payment.status === 'completed' ? '✅' : payment.status === 'pending' ? '⏳' : '❌';
+            
+            return `
+                <div class="activity-item transaction-item" style="cursor: pointer;" onclick="app.viewPaymentDetails('${payment.id}')">
+                    <div class="activity-icon ${payment.status}" style="font-size: 1.2rem;">
+                        ${statusIcon}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">€${payment.amount.toLocaleString()}</div>
+                        <div class="activity-description">
+                            ${condo?.name || 'N/A'} - ${resident?.unit || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="activity-time">${this.formatTimeAgo(payment.date)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Generate detailed payments table rows
+    generatePaymentsTableRows() {
+        const payments = CONDOPAY_MOCK_DATA.payments;
+        
+        return payments.map(payment => {
+            const condo = CONDOPAY_MOCK_DATA.condominiums.find(c => c.id === payment.condominiumId);
+            const resident = CONDOPAY_MOCK_DATA.residents.find(r => r.id === payment.residentId);
+            
+            return `
+                <tr style="cursor: pointer;" onclick="app.viewPaymentDetails('${payment.id}')"
+                    onmouseenter="this.style.backgroundColor='#f7fafc'"
+                    onmouseleave="this.style.backgroundColor='white'">
+                    
+                    <td class="font-semibold" style="font-family: monospace;">${payment.id}</td>
+                    <td>${condo?.name || 'N/A'}</td>
+                    <td>${resident?.unit || 'N/A'}</td>
+                    <td style="text-align: right; font-weight: bold;">€${payment.amount.toLocaleString()}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>${this.getMethodIcon(payment.method)}</span>
+                            <span>${payment.method === 'stripe' ? 'Stripe' : payment.method === 'bank_transfer' ? 'Bonifico' : 'Contanti'}</span>
+                        </div>
+                    </td>
+                    <td>${Utils.Date.formatDate(payment.date)}</td>
+                    <td>
+                        <span class="status-badge status-${payment.status === 'completed' ? 'success' : payment.status === 'pending' ? 'warning' : 'danger'}">
+                            ${payment.status === 'completed' ? 'Completato' : payment.status === 'pending' ? 'In attesa' : 'Fallito'}
+                        </span>
+                    </td>
+                    <td onclick="event.stopPropagation();">
+                        <button class="btn btn-secondary btn-sm" onclick="app.viewPaymentDetails('${payment.id}')" title="Dettagli">
+                            👁️
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
 
     // ===== UTILITY FUNCTIONS =====
@@ -537,46 +824,6 @@ class CondoPayApp {
         });
     }
 
-    generateActivityItems() {
-        const activities = CONDOPAY_MOCK_DATA.recentActivity || [];
-        
-        return activities.map(activity => `
-            <div class="activity-item">
-                <div class="activity-icon ${activity.type}">
-                    ${this.getActivityIcon(activity.type)}
-                </div>
-                <div class="activity-content">
-                    <div class="activity-title">${activity.title}</div>
-                    <div class="activity-description">${activity.description}</div>
-                </div>
-                <div class="activity-time">${this.formatTimeAgo(activity.timestamp)}</div>
-            </div>
-        `).join('');
-    }
-
-    generateCondosTableRows() {
-        const condos = CONDOPAY_MOCK_DATA.condominiums || [];
-        
-        return condos.map(condo => `
-            <tr data-condo-id="${condo.id}">
-                <td>
-                    <div>
-                        <div class="font-semibold">${condo.name}</div>
-                        <div class="text-sm text-gray-500">${condo.address}</div>
-                    </div>
-                </td>
-                <td>${condo.units}</td>
-                <td>€${condo.monthlyAmount.toLocaleString()}</td>
-                <td>${condo.paymentRate}%</td>
-                <td>${condo.defaultingUnits} unità</td>
-                <td><span class="status-badge status-${this.getStatusColor(condo.paymentRate)}">${this.getStatusText(condo.paymentRate)}</span></td>
-                <td>
-                    <button class="btn btn-secondary" onclick="app.manageCondominium(${condo.id})">Gestisci</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
     getActivityIcon(type) {
         const icons = {
             payment: '💳',
@@ -588,6 +835,18 @@ class CondoPayApp {
     }
 
     getStatusColor(paymentRate) {
+        if (paymentRate >= 95) return '#48bb78';
+        if (paymentRate >= 85) return '#ed8936';
+        return '#f56565';
+    }
+
+    getStatusClass(paymentRate) {
+        if (paymentRate >= 95) return 'success';
+        if (paymentRate >= 85) return 'warning';
+        return 'danger';
+    }
+
+    getCondoStatusClass(paymentRate) {
         if (paymentRate >= 95) return 'success';
         if (paymentRate >= 85) return 'warning';
         return 'danger';
@@ -600,17 +859,30 @@ class CondoPayApp {
         return 'Critico';
     }
 
+    getMethodIcon(method) {
+        const icons = {
+            'stripe': '💳',
+            'bank_transfer': '🏦',
+            'cash': '💰',
+            'paypal': '💵'
+        };
+        return icons[method] || '💳';
+    }
+
     formatTimeAgo(timestamp) {
         const now = new Date();
         const time = new Date(timestamp);
         const diffMs = now - time;
+        
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
         
         if (diffMins < 1) return 'Ora';
         if (diffMins < 60) return `${diffMins} min fa`;
         if (diffHours < 24) return `${diffHours} ore fa`;
-        return time.toLocaleDateString('it-IT');
+        if (diffDays < 7) return `${diffDays} giorni fa`;
+        return Utils.Date.formatDate(time);
     }
 
     // ===== DATA MANAGEMENT =====
@@ -685,22 +957,6 @@ class CondoPayApp {
 
     // ===== PLACEHOLDER METHODS FOR OTHER SECTIONS =====
     
-    generateCondominiumCards() {
-        return '<div class="text-center p-4">Cards condomini in sviluppo...</div>';
-    }
-
-    generateDetailedCondosTableRows() {
-        return '<tr><td colspan="9" class="text-center p-4">Tabella dettagliata in sviluppo...</td></tr>';
-    }
-
-    generateTransactionItems() {
-        return '<div class="text-center p-4">Transazioni recenti in sviluppo...</div>';
-    }
-
-    generatePaymentsTableRows() {
-        return '<tr><td colspan="8" class="text-center p-4">Tabella pagamenti in sviluppo...</td></tr>';
-    }
-
     generateResidentsHTML() {
         return '<div class="text-center p-4"><h2>Gestione Condomini</h2><p>Sezione in sviluppo...</p></div>';
     }
@@ -735,14 +991,49 @@ class CondoPayApp {
     filterCondominiums() {}
     setupPaymentFilters() {}
     refreshPayments() {}
-    addCondominium() { alert('Funzionalità in sviluppo'); }
-    manageCondominium(id) { alert(`Gestione condominio ${id} in sviluppo`); }
+    addCondominium() { 
+        if (typeof this.addCondominium !== 'undefined' && window.app && window.app.addCondominium) {
+            // Usa l'implementazione completa se disponibile
+            return;
+        }
+        alert('Funzionalità in sviluppo'); 
+    }
+    manageCondominium(id) { 
+        if (typeof window.app !== 'undefined' && window.app.manageCondominium && window.app.manageCondominium !== this.manageCondominium) {
+            // Usa l'implementazione completa se disponibile
+            return window.app.manageCondominium(id);
+        }
+        alert(`Gestione condominio ${id} in sviluppo`); 
+    }
     exportChart() { alert('Export in sviluppo'); }
     exportCondominiums() { alert('Export in sviluppo'); }
     exportPayments() { alert('Export in sviluppo'); }
     processPayment() { alert('Funzionalità in sviluppo'); }
-    showNotifications() { alert('Notifiche in sviluppo'); }
-    showUserMenu() { alert('Menu utente in sviluppo'); }
+    viewPaymentDetails(id) { 
+        if (typeof window.app !== 'undefined' && window.app.viewPaymentDetails && window.app.viewPaymentDetails !== this.viewPaymentDetails) {
+            return window.app.viewPaymentDetails(id);
+        }
+        alert(`Dettagli pagamento ${id} in sviluppo`); 
+    }
+    viewCondoResidents(id) { 
+        if (typeof window.app !== 'undefined' && window.app.viewCondoResidents && window.app.viewCondoResidents !== this.viewCondoResidents) {
+            return window.app.viewCondoResidents(id);
+        }
+        alert(`Residenti condominio ${id} in sviluppo`); 
+    }
+    exportCondoReport(id) { 
+        if (typeof window.app !== 'undefined' && window.app.exportCondoReport && window.app.exportCondoReport !== this.exportCondoReport) {
+            return window.app.exportCondoReport(id);
+        }
+        alert(`Report condominio ${id} in sviluppo`); 
+    }
+    sendCondoCommunication(id) { 
+        if (typeof window.app !== 'undefined' && window.app.sendCondoCommunication && window.app.sendCondoCommunication !== this.sendCondoCommunication) {
+            return window.app.sendCondoCommunication(id);
+        }
+        alert(`Comunicazione condominio ${id} in sviluppo`); 
+    }
+    
     toggleMobileMenu() {
         const sidebar = document.querySelector('.sidebar');
         if (sidebar) {
@@ -754,6 +1045,21 @@ class CondoPayApp {
 // Global functions
 function logout() {
     app.logout();
+}
+
+function showNotifications() {
+    if (typeof window.notificationCenter !== 'undefined') {
+        window.notificationCenter.showNotificationCenter();
+    } else {
+        alert('Centro notifiche in sviluppo');
+    }
+}
+
+function showUserMenu() {
+    if (typeof window.showUserMenu !== 'undefined' && window.showUserMenu !== showUserMenu) {
+        return window.showUserMenu();
+    }
+    alert('Menu utente in sviluppo');
 }
 
 // Initialize app when DOM is loaded

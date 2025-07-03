@@ -887,4 +887,407 @@ tbody tr:hover {
 .rounded-lg { border-radius: var(--radius-lg); }
 
 .shadow { box-shadow: var(--shadow-sm); }
-.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-lg { box-shadow: var(--shadow-lg); }/* CondoPay App Demo - Additional Styles for Complete Implementation */
+
+/* Modal System Styles */
+.modal-overlay {
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Form Builder Styles */
+.form-control {
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+.field-error {
+    animation: errorShake 0.3s ease-in-out;
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Interactive Charts Styles */
+.chart-area svg {
+    width: 100%;
+    height: 100%;
+}
+
+.chart-area svg text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chart-area svg rect:hover,
+.chart-area svg circle:hover,
+.chart-area svg path:hover {
+    cursor: pointer;
+    filter: brightness(1.1);
+}
+
+/* Enhanced Card Styles */
+.condo-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.condo-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.condo-card:hover::before {
+    opacity: 1;
+}
+
+.condo-card .status-indicator {
+    transition: all 0.3s ease;
+}
+
+.condo-card:hover .status-indicator {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Progress Bar Enhancements */
+.progress-bar {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Enhanced Status Badges */
+.status-badge {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: left 0.3s ease;
+}
+
+.status-badge:hover::before {
+    left: 100%;
+}
+
+/* Button Enhancements */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* Table Enhancements */
+.data-table table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.data-table table tbody tr:hover {
+    background-color: #f7fafc !important;
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Activity Items Animation */
+.activity-item {
+    animation: slideInRight 0.3s ease-out;
+    transition: all 0.2s ease;
+}
+
+.activity-item:hover {
+    background-color: #f7fafc;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Loading States */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.loading::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #667eea;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    margin-left: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Notification Enhancements */
+.notification {
+    backdrop-filter: blur(8px);
+    border-left: 4px solid;
+}
+
+.notification-success {
+    border-left-color: #48bb78;
+    background: rgba(72, 187, 120, 0.1);
+}
+
+.notification-error {
+    border-left-color: #f56565;
+    background: rgba(245, 101, 101, 0.1);
+}
+
+.notification-warning {
+    border-left-color: #ed8936;
+    background: rgba(237, 137, 54, 0.1);
+}
+
+.notification-info {
+    border-left-color: #4299e1;
+    background: rgba(66, 153, 225, 0.1);
+}
+
+/* Settings Page Styles */
+.settings-tab {
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.settings-tab.active {
+    border-bottom-color: #667eea;
+    background-color: #f7fafc;
+}
+
+.settings-section {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chart Container Enhancements */
+.chart-container {
+    position: relative;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.chart-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* Payment Method Cards */
+.method-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.method-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .condo-card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-filters {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal {
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        text-align: center;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .notification {
+        margin: 0 1rem;
+        min-width: auto;
+    }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus Styles */
+.btn:focus,
+.form-control:focus,
+button:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a202c;
+        --text-color: #e2e8f0;
+        --border-color: #2d3748;
+    }
+    
+    .modal {
+        background: var(--bg-color);
+        color: var(--text-color);
+    }
+    
+    .notification {
+        background: rgba(26, 32, 44, 0.95);
+        color: var(--text-color);
+    }
+}
